@@ -122,10 +122,10 @@ class Discriminator(nn.Module):
             generator=False
         ) for i in range(1, len(feature_maps))])
         self.flatten     = nn.Flatten()
-        self.dense1024 = nn.Linear(feature_maps[-1]*6*6, 1024)
+        self.dense1024 = nn.Linear(feature_maps[-1]*6*6, 1024) #Fixed for 24x24 input for now
         self.lrelu     = nn.LeakyReLU(.2, inplace=True)
         self.dense1    = nn.Linear(1024, 1)
-        self.sigmoid   = nn.Sigmoid()
+        #self.sigmoid   = nn.Sigmoid()
 
     def forward(self, x):
         x = self.prework(x)
@@ -134,4 +134,4 @@ class Discriminator(nn.Module):
         x = self.dense1024(self.flatten(x))
         x = self.lrelu(x)
         x = self.dense1(x)
-        return self.sigmoid(x)
+        return x #self.sigmoid(x) -- Do not apply sigmoid due to BCEWithLogitsLoss usage for training as it's more numerically stable than using a plain Sigmoid followed by a BCELoss
