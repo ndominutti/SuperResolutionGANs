@@ -7,22 +7,22 @@ import os
 import argparse
 
 
-def download_dataset(args):
-    """
-    Load datasets from Hugging Face and save them to disk
+# def download_dataset(args):
+#     """
+#     Load datasets from Hugging Face and save them to disk
     
-    Args:
-      data_path(str): HF path to the XNLI dataset
-    """
-    data = load_dataset("satellite-image-deep-learning/SODA-A", split='train')
+#     Args:
+#       data_path(str): HF path to the XNLI dataset
+#     """
+#     data = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
     
-    data.shuffle(seed=1)
-    data[:2000].save_to_disk(args.save_path+'/train')
-    data[2000:].save_to_disk(args.save_path+'test')
+#     data.shuffle(seed=1)
+#     data[:900].save_to_disk(args.save_path+'/train')
+#     data[900:].save_to_disk(args.save_path+'test')
 
 
-def load_train_dataset(data_dir:str) -> Dataset:
-    return load_from_disk(data_dir)
+# def load_train_dataset(data_dir:str) -> Dataset:
+#     return load_from_disk(data_dir)
 
 
 class CustomImageDataset(Dataset):
@@ -45,8 +45,8 @@ class CustomImageDataset(Dataset):
         }
 
 
-if __name__=='__main__':
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--save_path", type=str)
-  download_dataset(parser.parse_args())
+# if __name__=='__main__':
+#   parser = argparse.ArgumentParser()
+#   parser.add_argument("--save_path", type=str)
+#   download_dataset(parser.parse_args())
 
