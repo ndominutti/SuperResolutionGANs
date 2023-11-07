@@ -19,7 +19,8 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
-def train_step(dataloader,
+def train_step(dataloader_train,
+               dataloader_test,
                generator,
                discriminator,
                vggloss,
@@ -27,10 +28,11 @@ def train_step(dataloader,
                optimizer_disc,
                optimizer_gen,
                DEVICE,
-               writer               
+               writer,
+               epoch               
               ):
     global gstep
-    for datadict in tqdm(dataloader):
+    for datadict in tqdm(dataloader_train):
         high_res = datadict['hr_image'].to(DEVICE)
         low_res = datadict['lr_image'].to(DEVICE)
         gen_img   = generator(low_res)
@@ -63,9 +65,41 @@ def train_step(dataloader,
         optimizer_gen.zero_grad()
         perceptual_loss.backward()
         optimizer_gen.step()
-        writer.add_scalar("perceptual_loss", perceptual_loss, global_step=gstep)
+        writer.add_scalar("train_perceptual_loss", perceptual_loss, global_step=gstep)
         writer.add_scalar("dicriminator_loss", loss_disc, global_step=gstep)
         gstep+=1
+    logger.info(f"Validation epoch {epoch}...\n")
+    validate(dataloader_test,
+               generator,
+               discriminator,
+               vggloss,
+               bce,
+               DEVICE,
+               writer)
+    
+
+def validate(test_dataloader, generator, discriminator, vggloss, bce, DEVICE, writer):
+  content_loss_sum = 0.0
+  adversarial_loss_sum = 0.0
+  perceptual_loss_sum = 0.0
+  num_batches = 0
+  with torch.no_grad():
+    for datadict in test_dataloader:
+        high_res = datadict['hr_image'].to(DEVICE)
+        low_res = datadict['lr_image'].to(DEVICE)
+        gen_img   = generator(low_res)
+        disc_gen  = discriminator(gen_img)
+        content_loss     = 0.006 * vggloss(gen_img, high_res) 
+        disc_gen  = discriminator(gen_img)
+        adversarial_loss = 10e-3*bce(disc_gen, torch.ones_like(disc_gen))
+        perceptual_loss  = content_loss + adversarial_loss
+        content_loss_sum+=content_loss
+        adversarial_loss_sum+=adversarial_loss
+        perceptual_loss_sum+=perceptual_loss
+        num_batches+=1
+  writer.add_scalar('test_content_loss',content_loss_sum/num_batches, global_step=gstep)
+  writer.add_scalar('test_adversarial_loss',adversarial_loss/num_batches, global_step=gstep)
+  writer.add_scalar('test_perceptual_loss',perceptual_loss/num_batches, global_step=gstep)
 
 
 def train(args):
@@ -79,13 +113,16 @@ def train(args):
     writer = SummaryWriter("logs")
     logger.info("Loading dataset...\n")
     train_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
-    # train_dataset = dataset_handler.load_train_dataset(
-    #     args.train_data_dir
-    # )        
+    test_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[1000:1500]')
     logger.info("Creating dataloader...\n")
-    custom_dataset = dataset_handler.CustomImageDataset(train_dataset)
-    dataloader = DataLoader(custom_dataset, 
+    custom_dataset_train = dataset_handler.CustomImageDataset(train_dataset)
+    dataloader_train = DataLoader(custom_dataset_train, 
           batch_size=args.train_batch_size, 
+          shuffle=True
+    )
+    custom_dataset_test = dataset_handler.CustomImageDataset(test_dataset)
+    dataloader_test = DataLoader(custom_dataset_test, 
+          batch_size=args.test_batch_size, 
           shuffle=True
     )
     generator      = Generator().to(device)
@@ -100,24 +137,30 @@ def train(args):
     global gstep
     gstep=0
     for epoch in range(args.epochs):
-        train_step(dataloader,
-                   generator,
-                   discriminator,
-                   vggloss,
-                   bce,
-                   optimizer_disc,
-                   optimizer_gen,
-                   device,
-                   writer
-                  )
+        train_step(dataloader_train,
+                  dataloader_test,
+                  generator,
+                  discriminator,
+                  vggloss,
+                  bce,
+                  optimizer_disc,
+                  optimizer_gen,
+                  device,
+                  writer,
+                  epoch
+        )
+
+    torch.save(generator, f'generator_{args.model_name}.pth')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int)
+    parser.add_argument("--model-name", type=str)
     parser.add_argument("--device", type=str, default='available')
     parser.add_argument("--train-data-dir", type=str, default='data/train/')
-    parser.add_argument("--train-batch-size", type=int, default=8)
+    parser.add_argument("--train-batch-size", type=int, default=16)
+    parser.add_argument("--test-batch-size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=10e-3)
     train(parser.parse_args())
     
