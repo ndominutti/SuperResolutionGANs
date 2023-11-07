@@ -4,9 +4,10 @@ from PIL import Image
 import auxiliars
 import numpy as np
 import os
+import argparse
 
 
-def download_dataset():
+def download_dataset(args):
     """
     Load datasets from Hugging Face and save them to disk
     
@@ -16,8 +17,8 @@ def download_dataset():
     data = load_dataset("satellite-image-deep-learning/SODA-A", split='train')
     
     data.shuffle(seed=1)
-    data[:2000].save_to_disk(f'data/train')
-    data[2000:].save_to_disk(f'data/test')
+    data[:2000].save_to_disk(args.save_path+'/train')
+    data[2000:].save_to_disk(args.save_path+'test')
 
 
 def load_train_dataset(data_dir:str) -> Dataset:
@@ -45,5 +46,7 @@ class CustomImageDataset(Dataset):
 
 
 if __name__=='__main__':
-  download_dataset()
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--save_path", type=str)
+  download_dataset(parser.parse_args())
 
