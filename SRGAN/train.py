@@ -9,6 +9,7 @@ import argparse
 import logging
 import sys
 import dataset_handler
+from datasets import load_dataset
 
 
 # Set up logger
@@ -71,9 +72,10 @@ def train(args):
     if args.device=='available':
       DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     logger.info("Loading dataset...\n")
-    train_dataset = dataset_handler.load_train_dataset(
-        args.train_data_dir
-    )        
+    train_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
+    # train_dataset = dataset_handler.load_train_dataset(
+    #     args.train_data_dir
+    # )        
     logger.info("Creating dataloader...\n")
     custom_dataset = dataset_handler.CustomImageDataset(train_dataset)
     dataloader = DataLoader(custom_dataset, 
@@ -106,7 +108,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--device", type=str, default='available')
     parser.add_argument("--train-data-dir", type=str, default='data/train/')
-    parser.add_argument("--train-batch-size", type=int, default=4)
+    parser.add_argument("--train-batch-size", type=int, default=8)
     parser.add_argument("--lr", type=float, default=10e-3)
     train(parser.parse_args())
     
