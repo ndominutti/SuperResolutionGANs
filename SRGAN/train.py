@@ -29,10 +29,8 @@ def train_step(dataloader,
               ):
     
     for datadict in tqdm(dataloader):
-        high_res = datadict['hr_image']
-        low_res = datadict['lr_image']
-        high_res.to(DEVICE)
-        low_res.to(DEVICE)
+        high_res = datadict['hr_image'].to(DEVICE)
+        low_res = datadict['lr_image'].to(DEVICE)
         gen_img   = generator(low_res)
         
         ### DISCRIMINATOR LOSS
@@ -70,7 +68,9 @@ def train(args):
     Main training pipeline
     """
     if args.device=='available':
-      DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+      device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+      device = args.device
     logger.info("Loading dataset...\n")
     train_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
     # train_dataset = dataset_handler.load_train_dataset(
@@ -82,9 +82,9 @@ def train(args):
           batch_size=args.train_batch_size, 
           shuffle=True
     )
-    generator      = Generator()
-    discriminator  = Discriminator()
-    vggloss        = VGGLoss()
+    generator      = Generator().to(device)
+    discriminator  = Discriminator().to(device)
+    vggloss        = VGGLoss(device)
     bce            = nn.BCEWithLogitsLoss()
     mse            = nn.MSELoss()
     optimizer_disc = optim.Adam(discriminator.parameters(), lr=args.lr, betas=(0.9, 0.999))
@@ -99,7 +99,7 @@ def train(args):
                    bce,
                    optimizer_disc,
                    optimizer_gen,
-                   DEVICE
+                   device
                   )
 
 
