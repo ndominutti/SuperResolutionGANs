@@ -10,7 +10,7 @@ import logging
 import sys
 import dataset_handler
 from datasets import load_dataset
-from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 
 
 # Set up logger
@@ -27,10 +27,9 @@ def train_step(dataloader,
                optimizer_disc,
                optimizer_gen,
                DEVICE,
-               writer,
-               step
+               writer               
               ):
-    
+    global gstep
     for datadict in tqdm(dataloader):
         high_res = datadict['hr_image'].to(DEVICE)
         low_res = datadict['lr_image'].to(DEVICE)
@@ -58,15 +57,15 @@ def train_step(dataloader,
         ### GENERATOR LOSS (Perceptual loss)
         content_loss     = 0.006 * vggloss(gen_img, high_res) #0.006 equals to the 1/12.75 rescaling factor used in the paper
         disc_gen  = discriminator(gen_img)
-        adversarial_loss = -10e-3*bce(disc_gen, torch.ones_like(disc_gen))
+        adversarial_loss = 10e-3*bce(disc_gen, torch.ones_like(disc_gen))
         perceptual_loss  = content_loss + adversarial_loss
 
         optimizer_gen.zero_grad()
         perceptual_loss.backward()
         optimizer_gen.step()
-        writer.add_scalar("perceptual_loss", perceptual_loss, global_step=step)
-        writer.add_scalar("dicriminator_loss", loss_disc, global_step=step)
-        step+=1
+        writer.add_scalar("perceptual_loss", perceptual_loss, global_step=gstep)
+        writer.add_scalar("dicriminator_loss", loss_disc, global_step=gstep)
+        gstep+=1
 
 
 def train(args):
@@ -98,7 +97,8 @@ def train(args):
     optimizer_gen  = optim.Adam(generator.parameters(), lr=args.lr, betas=(0.9, 0.999))
 
     logger.info("Training started...\n")
-    step=0
+    global gstep
+    gstep=0
     for epoch in range(args.epochs):
         train_step(dataloader,
                    generator,
@@ -108,8 +108,7 @@ def train(args):
                    optimizer_disc,
                    optimizer_gen,
                    device,
-                   writer,
-                   step
+                   writer
                   )
 
 
