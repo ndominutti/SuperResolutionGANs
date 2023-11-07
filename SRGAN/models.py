@@ -11,7 +11,7 @@ import torch.nn.functional as F
 
 class Prework(nn.Module):
     def __init__(
-        self, n_channels, out_channels, kernel_size, stride, padding, generator=True
+        self, n_channels:int, out_channels:int, kernel_size:int, stride:int, padding:int, generator:bool=True
     ):
         super().__init__()
         self.conv = nn.Conv2d(
@@ -23,21 +23,21 @@ class Prework(nn.Module):
             else nn.LeakyReLU(0.2, inplace=True)
         )
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         return self.actfunc(self.conv(x))
 
 
 class ConvBlockBase(nn.Module):
     def __init__(
         self,
-        n_channels,
-        out_channels,
-        kernel_size,
-        stride,
-        padding,
-        apply_bn=True,
-        apply_act=True,
-        generator=True,
+        n_channels:int,
+        out_channels:int,
+        kernel_size:int,
+        stride:int,
+        padding:int,
+        apply_bn:bool=True,
+        apply_act:bool=True,
+        generator:bool=True,
     ):
         super().__init__()
         self.apply_act = apply_act
@@ -49,7 +49,7 @@ class ConvBlockBase(nn.Module):
             else nn.LeakyReLU(0.2, inplace=True)
         )
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         return (
             self.prelu(self.bn(self.conv(x)))
             if self.apply_act
@@ -58,21 +58,21 @@ class ConvBlockBase(nn.Module):
 
 
 class ResBlock(nn.Module):
-    def __init__(self, channels, kernel_size=3, stride=1, padding=1):
+    def __init__(self, channels:int, kernel_size:int=3, stride:int=1, padding:int=1):
         super().__init__()
         self.resblock1 = ConvBlockBase(channels, channels, kernel_size, stride, padding)
         self.resblock2 = ConvBlockBase(
             channels, channels, kernel_size, stride, padding, apply_act=False
         )
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         x_rb1 = self.resblock1(x)
         return self.resblock2(x_rb1) + x
 
 
 class Upsampler(nn.Module):
     def __init__(
-        self, n_channels, upsampling_factor=2, kernel_size=3, stride=1, padding=1
+        self, n_channels:int, upsampling_factor:int=2, kernel_size:int=3, stride:int=1, padding:int=1
     ):
         super().__init__()
         self.conv = nn.Conv2d(
@@ -87,7 +87,7 @@ class Upsampler(nn.Module):
         )  # n_channels*4, H, W -> n_channels, 2*H, 2*W
         self.prelu = nn.PReLU(num_parameters=n_channels)
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         a = self.conv(x)
         return self.prelu(self.pixelshuffle(a))
 
@@ -96,7 +96,7 @@ class Upsampler(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, in_channels=3, out_channels=64, resblocks=16, upsamplers=2):
+    def __init__(self, in_channels:int=3, out_channels:int=64, resblocks:int=16, upsamplers:int=2):
         super().__init__()
         self.prework = Prework(in_channels, out_channels, 9, 1, 4)
         self.residual_blocks = nn.Sequential(
@@ -110,7 +110,7 @@ class Generator(nn.Module):
         )
         self.conv = nn.Conv2d(64, 3, kernel_size=9, stride=1, padding=4)
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         x = self.prework(x)
         x_resblocks = self.residual_blocks(x)
         x = self.skipblock(x_resblocks) + x
@@ -122,7 +122,7 @@ class Generator(nn.Module):
 
 class Discriminator(nn.Module):
     def __init__(
-        self, n_channels=3, feature_maps=[64, 64, 128, 128, 256, 256, 512, 512]
+        self, n_channels:int=3, feature_maps:list=[64, 64, 128, 128, 256, 256, 512, 512]
     ):
         super().__init__()
         self.prework = Prework(n_channels, feature_maps[0], 3, 1, 1, generator=False)
@@ -147,7 +147,7 @@ class Discriminator(nn.Module):
         self.dense1 = nn.Linear(1024, 1)
         # self.sigmoid   = nn.Sigmoid()
 
-    def forward(self, x):
+    def forward(self, x:torch.Tensor):
         x = self.prework(x)
         x = self.disblocks(x)
         x = self.dense1024(self.flatten(x))
