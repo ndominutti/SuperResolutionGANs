@@ -9,6 +9,7 @@ import argparse
 import logging
 import sys
 import dataset_handler
+import copy
 from datasets import load_dataset
 from tensorboardX import SummaryWriter
 
@@ -29,9 +30,12 @@ def train_step(dataloader_train,
                optimizer_gen,
                DEVICE,
                writer,
-               epoch               
+               epoch          
               ):
     global gstep
+    global minimum_loss
+    global best_generator
+    global non_improving_rounds
     for datadict in tqdm(dataloader_train):
         high_res = datadict['hr_image'].to(DEVICE)
         low_res = datadict['lr_image'].to(DEVICE)
@@ -77,6 +81,12 @@ def train_step(dataloader_train,
                                 DEVICE,
                                 writer
                       )
+    if minimum_loss==None or minimum_loss>perceptual_loss:
+      minimum_loss=perceptual_loss
+      best_generator=copy.deepcopy(generator)
+    else:
+      non_improving_rounds+=1
+
     
 
 def validate(test_dataloader, generator, discriminator, vggloss, bce, DEVICE, writer):
@@ -112,7 +122,7 @@ def train(args):
       device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
       device = args.device
-    writer = SummaryWriter("logs")
+    writer = SummaryWriter("logs", comment=args.model_name)
     logger.info("Loading dataset...\n")
     train_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
     test_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[1000:1500]')
@@ -138,6 +148,11 @@ def train(args):
     logger.info("Training started...\n")
     global gstep
     gstep=0
+    global minimum_loss
+    minimum_loss=None
+    global best_generator
+    global non_improving_rounds
+    non_improving_rounds=0
     for epoch in range(args.epochs):
         train_step(dataloader_train,
                   dataloader_test,
@@ -151,8 +166,11 @@ def train(args):
                   writer,
                   epoch
         )
+        if non_improving_rounds>=args.early_stopping_rounds:
+          print('*'*50 + '\n EARL STOPPING' + '\n' + '*'*50)
+          break
 
-    torch.save(generator, f'{args.save_path}/generator_{args.model_name}.pth')
+    torch.save(best_generator, f'{args.save_path}/generator_{args.model_name}.pth')
 
 
 if __name__ == "__main__":
@@ -160,20 +178,10 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--model-name", type=str)
     parser.add_argument("--save-path", type=str)
+    parser.add_argument("--early-stopping-rounds", type=int, default=3)
     parser.add_argument("--device", type=str, default='available')
     parser.add_argument("--train-data-dir", type=str, default='data/train/')
     parser.add_argument("--train-batch-size", type=int, default=16)
     parser.add_argument("--test-batch-size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=10e-3)
     train(parser.parse_args())
-    
-    
-
-    
-        
-        
-
-
-
-        
-        
