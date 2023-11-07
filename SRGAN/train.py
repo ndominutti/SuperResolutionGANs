@@ -23,14 +23,15 @@ def train_step(dataloader,
                vggloss,
                bce,
                optimizer_disc,
-               optimizer_gen
+               optimizer_gen,
+               DEVICE
               ):
     
     for datadict in tqdm(dataloader):
         high_res = datadict['hr_image']
         low_res = datadict['lr_image']
-        high_res.to('cpu')
-        low_res.to('cpu')
+        high_res.to(DEVICE)
+        low_res.to(DEVICE)
         gen_img   = generator(low_res)
         
         ### DISCRIMINATOR LOSS
@@ -67,6 +68,8 @@ def train(args):
     """
     Main training pipeline
     """
+    if args.device=='available':
+      DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     logger.info("Loading dataset...\n")
     train_dataset = dataset_handler.load_train_dataset(
         args.train_data_dir
@@ -93,13 +96,15 @@ def train(args):
                    vggloss,
                    bce,
                    optimizer_disc,
-                   optimizer_gen
+                   optimizer_gen,
+                   DEVICE
                   )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int)
+    parser.add_argument("--device", type=str, default='available')
     parser.add_argument("--train-data-dir", type=str, default='data/train/')
     parser.add_argument("--train-batch-size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=10e-3)
