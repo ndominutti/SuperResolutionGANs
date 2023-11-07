@@ -1,6 +1,6 @@
 # SuperResolutionGANs
 
-This is an academic purpose repository containing resources related to Generative Adversarial Networks used in the context of Super Resolution. 
+This is an academic purpose repository containing resources related to Generative Adversarial Networks used in the context of Super Resolution. <br>
 Super-Resolution AI tasks are crucial in today's technology landscape because they enhance visual quality, improve user experiences, optimize bandwidth and storage, aid in medical imaging, and find applications in video surveillance, art restoration, and more.
 
 #Repo structure
