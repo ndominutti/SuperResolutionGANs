@@ -55,7 +55,7 @@ def train_step(dataloader,
         ### GENERATOR LOSS (Perceptual loss)
         content_loss     = 0.006 * vggloss(gen_img, high_res) #0.006 equals to the 1/12.75 rescaling factor used in the paper
         disc_gen  = discriminator(gen_img)
-        adversarial_loss = -1e-2*bce(disc_gen, torch.ones_like(disc_gen))
+        adversarial_loss = -10e-3*bce(disc_gen, torch.ones_like(disc_gen))
         perceptual_loss  = content_loss + adversarial_loss
 
         optimizer_gen.zero_grad()
