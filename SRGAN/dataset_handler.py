@@ -44,5 +44,6 @@ class CustomImageDataset(Dataset):
         }
 
 
-
+if __name__=='__main__':
+  download_dataset()
 
