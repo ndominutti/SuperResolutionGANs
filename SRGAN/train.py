@@ -69,13 +69,14 @@ def train_step(dataloader_train,
         writer.add_scalar("dicriminator_loss", loss_disc, global_step=gstep)
         gstep+=1
     logger.info(f"Validation epoch {epoch}...\n")
-    validate(dataloader_test,
-               generator,
-               discriminator,
-               vggloss,
-               bce,
-               DEVICE,
-               writer)
+    perceptual_loss = validate(dataloader_test,
+                                generator,
+                                discriminator,
+                                vggloss,
+                                bce,
+                                DEVICE,
+                                writer
+                      )
     
 
 def validate(test_dataloader, generator, discriminator, vggloss, bce, DEVICE, writer):
@@ -100,6 +101,7 @@ def validate(test_dataloader, generator, discriminator, vggloss, bce, DEVICE, wr
   writer.add_scalar('test_content_loss',content_loss_sum/num_batches, global_step=gstep)
   writer.add_scalar('test_adversarial_loss',adversarial_loss/num_batches, global_step=gstep)
   writer.add_scalar('test_perceptual_loss',perceptual_loss/num_batches, global_step=gstep)
+  return perceptual_loss/num_batches
 
 
 def train(args):
@@ -150,13 +152,14 @@ def train(args):
                   epoch
         )
 
-    torch.save(generator, f'generator_{args.model_name}.pth')
+    torch.save(generator, f'{args.save_path}/generator_{args.model_name}.pth')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--model-name", type=str)
+    parser.add_argument("--save-path", type=str)
     parser.add_argument("--device", type=str, default='available')
     parser.add_argument("--train-data-dir", type=str, default='data/train/')
     parser.add_argument("--train-batch-size", type=int, default=16)
