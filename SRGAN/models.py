@@ -130,7 +130,6 @@ class Discriminator(nn.Module):
     def forward(self, x):
         x = self.prework(x)
         x = self.disblocks(x)
-        print(self.flatten(x).shape)
         x = self.dense1024(self.flatten(x))
         x = self.lrelu(x)
         x = self.dense1(x)
