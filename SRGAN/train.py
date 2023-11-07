@@ -10,6 +10,7 @@ import logging
 import sys
 import dataset_handler
 from datasets import load_dataset
+from torch.utils.tensorboard import SummaryWriter
 
 
 # Set up logger
@@ -25,7 +26,9 @@ def train_step(dataloader,
                bce,
                optimizer_disc,
                optimizer_gen,
-               DEVICE
+               DEVICE,
+               writer,
+               step
               ):
     
     for datadict in tqdm(dataloader):
@@ -61,6 +64,9 @@ def train_step(dataloader,
         optimizer_gen.zero_grad()
         perceptual_loss.backward()
         optimizer_gen.step()
+        writer.add_scalar("perceptual_loss", perceptual_loss, global_step=step)
+        writer.add_scalar("dicriminator_loss", loss_disc, global_step=step)
+        step+=1
 
 
 def train(args):
@@ -71,6 +77,7 @@ def train(args):
       device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
       device = args.device
+    writer = SummaryWriter("logs")
     logger.info("Loading dataset...\n")
     train_dataset = load_dataset("satellite-image-deep-learning/SODA-A", split='train[:1000]')
     # train_dataset = dataset_handler.load_train_dataset(
@@ -91,6 +98,7 @@ def train(args):
     optimizer_gen  = optim.Adam(generator.parameters(), lr=args.lr, betas=(0.9, 0.999))
 
     logger.info("Training started...\n")
+    step=0
     for epoch in range(args.epochs):
         train_step(dataloader,
                    generator,
@@ -99,7 +107,9 @@ def train(args):
                    bce,
                    optimizer_disc,
                    optimizer_gen,
-                   device
+                   device,
+                   writer,
+                   step
                   )
 
 
