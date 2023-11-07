@@ -1,7 +1,6 @@
 from torchvision.models import vgg19, VGG19_Weights
 import torch.nn as nn
 
-#phi 5,4 
 class VGGLoss(nn.Module):
     def __init__(self):
         super().__init__()
@@ -10,7 +9,7 @@ class VGGLoss(nn.Module):
             param.requires_grad=False
         self.mse = nn.MSELoss()
 
-    def forward(gen, gt):
+    def forward(self, gen, gt):
         gen_vgg = self.vgg(gen)
         gt_vgg  = self.vgg(gt)
         return self.mse(gen_vgg, gt_vgg)
