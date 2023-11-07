@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import torch.optim as optim
+import torch
 from torch.utils.data import DataLoader
 from models import Generator, Discriminator
 from loss import VGGLoss
@@ -25,7 +26,9 @@ def train_step(dataloader,
                optimizer_gen
               ):
     
-    for high_res, low_res in tqdm(dataloader):
+    for datadict in tqdm(dataloader):
+        high_res = datadict['hr_image']
+        low_res = datadict['lr_image']
         high_res.to('cpu')
         low_res.to('cpu')
         gen_img   = generator(low_res)
@@ -42,7 +45,7 @@ def train_step(dataloader,
             disc_real, torch.ones_like(disc_real) - 0.1 * torch.rand_like(disc_real)
         )
         disc_loss_gen = bce(disc_gen, torch.zeros_like(disc_gen))
-        loss_disc = disc_loss_fake + disc_loss_real
+        loss_disc = disc_loss_gen + disc_loss_real
 
         optimizer_disc.zero_grad()
         loss_disc.backward()
@@ -52,7 +55,7 @@ def train_step(dataloader,
         ### GENERATOR LOSS (Perceptual loss)
         content_loss     = 0.006 * vggloss(gen_img, high_res) #0.006 equals to the 1/12.75 rescaling factor used in the paper
         disc_gen  = discriminator(gen_img)
-        adversarial_loss = -1e-2*bce(disc_gen, torch.ones_like(disc_fake))
+        adversarial_loss = -1e-2*bce(disc_gen, torch.ones_like(disc_gen))
         perceptual_loss  = content_loss + adversarial_loss
 
         optimizer_gen.zero_grad()
@@ -69,10 +72,10 @@ def train(args):
         args.train_data_dir
     )        
     logger.info("Creating dataloader...\n")
-    dataloader     = DataLoader(
-        train_dataset,
-        batch_size=args.train_batch_size,
-        shuffle=True,
+    custom_dataset = dataset_handler.CustomImageDataset(train_dataset)
+    dataloader = DataLoader(custom_dataset, 
+          batch_size=args.train_batch_size, 
+          shuffle=True
     )
     generator      = Generator()
     discriminator  = Discriminator()
