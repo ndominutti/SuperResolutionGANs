@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Real ESRNET
 python realesrgan/train.py -opt options/custom_realesrnet_training.yml --debug

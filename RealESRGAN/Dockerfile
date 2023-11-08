@@ -6,10 +6,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends python3-pip\
 
 RUN git clone https://github.com/xinntao/Real-ESRGAN.git
 COPY custom_realesrnet_training.yml Real-ESRGAN/options/
-COPY train.sh Real-ESRGAN
-# RUN cp custom_realesrgan_training.yml Real-ESRGAN/options/
-RUN cd Real-ESRGAN
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r Real-ESRGAN/requirements.txt
 
 
 
@@ -17,7 +14,9 @@ RUN pip3 install -r requirements.txt
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.1/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth \
                                                                                             -P experiments/pretrained_models
 
+ENV PATH="/opt/program:${PATH}"
+COPY model /opt/program
 
 
-RUN chmod +x train.sh
-# RUN ./train.sh
+
+WORKDIR /opt/program
