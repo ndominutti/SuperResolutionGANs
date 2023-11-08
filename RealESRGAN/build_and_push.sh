@@ -13,7 +13,7 @@ then
     exit 1
 fi
 
-chmod +x model/train.sh
+chmod +x model/train
 #chmod +x model/serve
 
 # Get the account number associated with the current IAM credentials
