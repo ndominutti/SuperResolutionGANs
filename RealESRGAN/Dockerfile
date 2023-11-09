@@ -15,8 +15,9 @@ RUN pip3 install -r Real-ESRGAN/requirements.txt
 
 
 #For training the Real-ESRNet
-RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.1/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth \
-                                                                                            -P experiments/pretrained_models
+RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.3/RealESRGAN_x4plus_netD.pth -P experiments/pretrained_models
+RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models
+
 
 ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
 
