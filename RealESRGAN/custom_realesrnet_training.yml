@@ -1,6 +1,6 @@
 # general settings
-name: CUSTOM_train_RealESRNetx4plus_1000k_B12G4
-model_type: CUSTOM_RealESRNetModel
+name: train_RealESRNetx4plus_1000k_B12G4
+model_type: RealESRNetModel
 scale: 4
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
 manual_seed: 0
@@ -35,8 +35,8 @@ datasets:
   train:
     name: DF2K+OST
     type: RealESRGANDataset
-    dataroot_gt: ~/opt/ml/input/data/training
-    meta_info: ~/opt/ml/input/data/training/meta_info/CUSTOM_meta_info.txt
+    dataroot_gt: /opt/ml/input/data
+    meta_info: /opt/ml/input/data/meta_info/meta_info_sub_pair.txt
     io_backend:
       type: disk
 
@@ -64,7 +64,7 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 5
+    num_worker_per_gpu: 2 #5
     batch_size_per_gpu: 12
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
@@ -89,7 +89,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth
+  pretrain_network_g: /opt/program/experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth
   param_key_g: params_ema
   strict_load_g: true
   resume_state: ~
@@ -108,7 +108,7 @@ train:
     milestones: [1000000]
     gamma: 0.5
 
-  total_iter: 1000000
+  total_iter: 10000 #1000000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -131,7 +131,7 @@ train:
 
 # logging settings
 logger:
-  print_freq: 100
+  print_freq: 1
   save_checkpoint_freq: !!float 5e3
   use_tb_logger: true
   wandb:

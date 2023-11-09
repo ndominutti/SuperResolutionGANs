@@ -3,18 +3,26 @@
 echo "Creating images DIRs"
 mkdir /opt/ml/input/data/training_multiscale
 mkdir /opt/ml/input/data/training_multiscale_sub
+mkdir /opt/ml/input/data/meta_info
 
 #Dataset preparation
 echo "Running multiscaling"
 python scripts/generate_multiscale_DF2K.py --input /opt/ml/input/data/training --output /opt/ml/input/data/training_multiscale
+
+
 echo "Running cropping"
-python scripts/extract_subimages.py --input /opt/ml/input/data/training_multiscale --output /opt/ml/input/data/training_multiscale_sub --crop_size 400 --step 200
+#python scripts/extract_subimages.py --input /opt/ml/input/data/training_multiscale --output /opt/ml/input/data/training_multiscale_sub --crop_size 400 --step 200
+
+
+echo "Running metadata generation"
+python scripts/generate_meta_info.py --input /opt/ml/input/data/training /opt/ml/input/data/training_multiscale --root /opt/ml/input/data /opt/ml/input/data --meta_info /opt/ml/input/data/meta_info/meta_info_sub_pair.txt
 
 
 
 
 # Real ESRNET
-python realesrgan/train.py -opt options/custom_realesrnet_training.yml --debug
+#python realesrgan/train.py -opt options/custom_realesrnet_training.yml --debug
+python realesrgan/train.py -opt options/custom_realesrnet_training.yml --auto_resume
 
 
 # Real ESRGAN
