@@ -1,5 +1,18 @@
 #!/bin/sh
 
+echo "Creating images DIRs"
+mkdir /opt/ml/input/data/training_multiscale
+mkdir /opt/ml/input/data/training_multiscale_sub
+
+#Dataset preparation
+echo "Running multiscaling"
+python scripts/generate_multiscale_DF2K.py --input /opt/ml/input/data/training --output /opt/ml/input/data/training_multiscale
+echo "Running cropping"
+python scripts/extract_subimages.py --input /opt/ml/input/data/training_multiscale --output /opt/ml/input/data/training_multiscale_sub --crop_size 400 --step 200
+
+
+
+
 # Real ESRNET
 python realesrgan/train.py -opt options/custom_realesrnet_training.yml --debug
 
