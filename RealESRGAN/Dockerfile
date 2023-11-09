@@ -20,5 +20,6 @@ RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.1/ESRGAN_
 
 ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
 
+COPY train.py Real-ESRGAN/realesrgan
 COPY model Real-ESRGAN
 WORKDIR /opt/program/Real-ESRGAN

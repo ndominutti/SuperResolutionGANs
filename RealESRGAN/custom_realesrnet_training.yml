@@ -33,8 +33,8 @@ queue_size: 180
 # dataset and data loader settings
 datasets:
   train:
-    name: CUSTOM
-    type: CUSTOM_RealESRGANDataset
+    name: DF2K+OST
+    type: RealESRGANDataset
     dataroot_gt: ~/opt/ml/input/data/training
     meta_info: ~/opt/ml/input/data/training/meta_info/CUSTOM_meta_info.txt
     io_backend:
