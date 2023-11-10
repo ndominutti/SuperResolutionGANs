@@ -9,15 +9,15 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends\
 
 WORKDIR /opt/program
 RUN git clone https://github.com/xinntao/Real-ESRGAN.git
-COPY custom_realesrnet_training.yml Real-ESRGAN/options/
+# COPY custom_realesrnet_training.yml Real-ESRGAN/options/
+COPY custom_finetune_4x.yml Real-ESRGAN/options/
 RUN pip3 install -r Real-ESRGAN/requirements.txt
+COPY train/ /opt/ml/input/data/training
 
 
-
-#For training the Real-ESRNet
+#For training the Real-ESRGAN
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.3/RealESRGAN_x4plus_netD.pth -P experiments/pretrained_models
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models
-
 
 ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
 
