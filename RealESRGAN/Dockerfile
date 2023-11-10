@@ -12,7 +12,7 @@ RUN git clone https://github.com/xinntao/Real-ESRGAN.git
 # COPY custom_realesrnet_training.yml Real-ESRGAN/options/
 COPY custom_finetune_4x.yml Real-ESRGAN/options/
 RUN pip3 install -r Real-ESRGAN/requirements.txt
-COPY train/ /opt/ml/input/data/training
+#COPY train/ /opt/ml/input/data/training
 
 
 #For training the Real-ESRGAN
