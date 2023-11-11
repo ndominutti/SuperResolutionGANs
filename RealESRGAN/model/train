@@ -5,7 +5,6 @@ mkdir /opt/ml/input/data/training_multiscale
 mkdir /opt/ml/input/data/training_multiscale_sub
 mkdir /opt/ml/input/data/meta_info
 
-
 #Dataset preparation
 echo "Running multiscaling"
 python scripts/generate_multiscale_DF2K.py --input /opt/ml/input/data/training --output /opt/ml/input/data/training_multiscale

@@ -76,8 +76,8 @@ datasets:
   # val:
   #   name: validation
   #   type: PairedImageDataset
-  #   dataroot_gt: path_to_gt
-  #   dataroot_lq: path_to_lq
+  #   dataroot_gt: /opt/ml/input/data
+  #   dataroot_lq: /opt/ml/input/data/training_multiscale_sub
   #   io_backend:
   #     type: disk
 
@@ -128,7 +128,7 @@ train:
     milestones: [10000] #40000
     gamma: 0.5
 
-  total_iter: 2
+  total_iter: 5000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -166,7 +166,7 @@ train:
 # Uncomment these for validation
 # validation settings
 # val:
-#   val_freq: !!float 5e3
+#   val_freq: 10
 #   save_img: True
 
 #   metrics:
@@ -177,8 +177,8 @@ train:
 
 # logging settings
 logger:
-  print_freq: 1
-  save_checkpoint_freq: 1 #!!float 5e3
+  print_freq: 10
+  save_checkpoint_freq: 10 #!!float 5e3
   use_tb_logger: true
   wandb:
     project: ~
