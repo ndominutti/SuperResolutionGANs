@@ -68,18 +68,18 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 2
-    batch_size_per_gpu: 12
+    batch_size_per_gpu: 4 #12
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
   # Uncomment these for validation
-  # val:
-  #   name: validation
-  #   type: PairedImageDataset
-  #   dataroot_gt: /opt/ml/input/data
-  #   dataroot_lq: /opt/ml/input/data/training_multiscale_sub
-  #   io_backend:
-  #     type: disk
+  val:
+    name: validation
+    type: PairedImageDataset
+    dataroot_gt: /opt/ml/input/data/hq
+    dataroot_lq: /opt/ml/input/data/lq
+    io_backend:
+      type: disk
 
 # network structures
 network_g:
@@ -128,7 +128,7 @@ train:
     milestones: [10000] #40000
     gamma: 0.5
 
-  total_iter: 5000
+  total_iter: 1000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -165,20 +165,20 @@ train:
 
 # Uncomment these for validation
 # validation settings
-# val:
-#   val_freq: 10
-#   save_img: True
+val:
+  val_freq: 100
+  save_img: True
 
-#   metrics:
-#     psnr: # metric name
-#       type: calculate_psnr
-#       crop_border: 4
-#       test_y_channel: false
+  metrics:
+    psnr: 
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
 
 # logging settings
 logger:
-  print_freq: 10
-  save_checkpoint_freq: 10 #!!float 5e3
+  print_freq: 50
+  save_checkpoint_freq: 100 #!!float 5e3
   use_tb_logger: true
   wandb:
     project: ~

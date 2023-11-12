@@ -10,8 +10,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends\
 WORKDIR /opt/program
 RUN git clone https://github.com/xinntao/Real-ESRGAN.git
 # COPY custom_realesrnet_training.yml Real-ESRGAN/options/
-COPY custom_finetune_4x.yml Real-ESRGAN/options/
 COPY requirements.txt Real-ESRGAN/
+COPY lowres.py Real-ESRGAN/scripts
 RUN pip3 install -r Real-ESRGAN/requirements.txt
 #COPY train/ /opt/ml/input/data/training
 
@@ -19,6 +19,8 @@ RUN pip3 install -r Real-ESRGAN/requirements.txt
 #For training the Real-ESRGAN
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.3/RealESRGAN_x4plus_netD.pth -P experiments/pretrained_models
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models
+
+COPY custom_finetune_4x.yml Real-ESRGAN/options/
 
 ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
 ENV TENSORBOARD_LOGS_PATH='/opt/ml/output/tensorboard/'
