@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#Training dataset preparation
+
+
+echo "Running multiscaling"
+python ./generate_multiscale_DF2K.py --input /opt/ml/processing/data/training/hq --output /opt/ml/processing/data/training/lq
+
+# echo "Running cropping"
+# python ./extract_subimages.py --input /opt/ml/processing/input/data/training_multiscale --output /opt/ml/processing/input/data/training_multiscale_sub --crop_size 400 --step 200
+
+
+
+echo "Running metadata generation"
+python generate_meta_info.py --input /opt/ml/processing/data/training/hq /opt/ml/processing/data/training/lq --root /opt/ml/processing/data/training /opt/ml/processing/data/training --meta_info /opt/ml/processing/data/training/meta_info/meta_info_sub_pair.txt
+
+# -----------------
+
+#Validation dataset preparation
+
+#For validation, as we already have HQ images, we only create copies with lower resolution sizes (4 times less than the original)
+echo "Creating LQ validation dataset"
+python ./lowres.py --input /opt/ml/processing/data/validation/hq --output /opt/ml/processing/data/validation/lq
+

@@ -17,8 +17,8 @@ RUN pip3 install -r Real-ESRGAN/requirements.txt
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.3/RealESRGAN_x4plus_netD.pth -P experiments/pretrained_models
 RUN wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models
 
-COPY scripts/lowres.py Real-ESRGAN/scripts
-COPY scripts/generate_multiscale_DF2K.py Real-ESRGAN/scripts
+# COPY scripts/lowres.py Real-ESRGAN/scripts
+# COPY scripts/generate_multiscale_DF2K.py Real-ESRGAN/scripts
 COPY config/custom_finetune_4x.yml Real-ESRGAN/options/
 
 ENV PATH="/opt/program/Real-ESRGAN:${PATH}"

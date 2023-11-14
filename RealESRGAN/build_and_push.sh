@@ -6,6 +6,7 @@
 # The argument to this script is the image name. This will be used as the image on the local
 # machine and combined with the account and region to form the repository name for ECR.
 image=$1
+path=$2
 
 if [ "$image" == "" ]
 then
@@ -14,7 +15,9 @@ then
 fi
 
 chmod +x train/train
-#chmod +x deploy/serve
+chmod +x deploy/serve
+chmod +x processing/process
+
 
 # Get the account number associated with the current IAM credentials
 account=$(aws sts get-caller-identity --query Account --output text)
@@ -47,7 +50,7 @@ aws ecr get-login-password --region "${region}" | docker login --username AWS --
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build  -t ${image} .
+docker build  -t ${image} ${path}
 docker tag ${image} ${fullname}
 
 docker push ${fullname}
