@@ -30,11 +30,11 @@ It's important to note that this implementation is tailored specifically for x4 
 * Open a sagemaker tensorboard session and keep an eye in the training metrics and validation images output
 
 <div style="text-align: center;">
-    <img src="../static/tb_images.png" width="560" height="430" />
+    <img src="../static/tb_images.png" width="600" height="600" />
 </div>
 
 <div style="text-align: center;">
-    <img src="../static/tb_metrics.png" width="560" height="430" />
+    <img src="../static/tb_metrics.png" width="600" height="600" />
 </div>
 
 * Also keep an eye in the instance metrics while training (ensure the GPU is working correctly and detect any possible bottleneck)
