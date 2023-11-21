@@ -16,7 +16,7 @@ fi
 
 chmod +x train/train
 chmod +x deploy/serve
-chmod +x processing/process
+chmod +x preprocess/process
 
 
 # Get the account number associated with the current IAM credentials
