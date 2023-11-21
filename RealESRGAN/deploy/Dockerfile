@@ -1,4 +1,5 @@
-FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04
+FROM nvidia/cuda:12.1.1-base-ubuntu20.04 
+# 12.1.1-runtime-ubuntu20.04
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends\  
@@ -9,27 +10,24 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends\
  curl 
 
 WORKDIR /opt/program
+#Run instalations
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
+#Clone main repo
 RUN git clone https://github.com/xinntao/Real-ESRGAN.git
-# COPY scripts/__init__.py Real-ESRGAN/realesrgan
-# RUN pip3 install -r Real-ESRGAN/requirements.txt
-###
-# RUN pip install awscli
-# # RUN mkdir /opt/ml /opt/ml/model
-# RUN aws s3 cp s3://sagemaker-us-east-2-169385451286/output/gan-2023-11-13-18-52-22-074/output/model.tar.gz /opt/ml/model
-# WORKDIR /opt/ml/model
-# RUN tar -xvf model.tar.gz 
-# WORKDIR /opt/program
-###
-
-ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
-COPY utils.py Real-ESRGAN/realesrgan
+#Create a minimum structure
+RUN mkdir /opt/program/config
+# Copy key files to the container
+COPY scripts/__init__.py Real-ESRGAN/realesrgan
+COPY scripts/utils.py Real-ESRGAN/.
+COPY config/config.yml /opt/program/config
 COPY main.py Real-ESRGAN/.
 COPY predictor.py Real-ESRGAN/.
 COPY serve Real-ESRGAN/.
 
+
+#Install nvidia toolkit
 RUN apt-get install -y gpg sed
 RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -39,7 +37,6 @@ RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearm
     apt-get update
 RUN apt-get install -y nvidia-container-toolkit
 
-ENV SAGEMAKER_SUBMIT_DIRECTORY /opt/program/Real-ESRGAN/
-ENV SAGEMAKER_PROGRAM serve
 
+ENV PATH="/opt/program/Real-ESRGAN:${PATH}"
 WORKDIR /opt/program/Real-ESRGAN

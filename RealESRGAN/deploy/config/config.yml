@@ -1,0 +1,9 @@
+model_path: /opt/ml/model/net_g_latest.pth
+
+model_params:
+    tile: 0
+    tile_pad: 10
+    pre_pad: 0
+    fp32: False
+    outscale: 4
+    device: cuda
