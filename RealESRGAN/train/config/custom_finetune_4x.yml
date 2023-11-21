@@ -1,3 +1,12 @@
+#ATTENTION!
+
+#This file is not of my authorship; it is a copy from the excellent work created by user xinntao on GitHub.
+#I've copied this file to make minor modifications necessary for my implementation in SageMaker.
+
+#Original work by: xinntao (https://github.com/xinntao/Real-ESRGAN)
+
+#----------------------------------------------------------------------------------------------------------
+
 # general settings
 name: finetune_RealESRGANx4plus_400k
 model_type: RealESRGANModel
