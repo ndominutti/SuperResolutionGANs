@@ -6,8 +6,16 @@ import os
 from PIL import Image
 import math
 
-def main(args):
+def main(args:dict) -> None:
     """
+    Implement a resolution downgrade converting the input images into 1/4 of their
+    original size.
+
+    Args:
+        args(dict): arguments from argparse.ArgumentParser()
+
+    Returns:
+        None
     """
     path_list = sorted(glob.glob(os.path.join(args.input, '*')))
     for path in path_list:
@@ -22,8 +30,6 @@ def main(args):
         cv2.imwrite(os.path.join(args.output, f'{basename}.png'), resized_img)
 
 if __name__ == '__main__':
-    """
-    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', type=str, help='Input folder')
     parser.add_argument('--output', type=str, help='Output folder')
