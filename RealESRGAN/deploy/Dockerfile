@@ -1,5 +1,4 @@
 FROM nvidia/cuda:12.1.1-base-ubuntu20.04 
-# 12.1.1-runtime-ubuntu20.04
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends\  
