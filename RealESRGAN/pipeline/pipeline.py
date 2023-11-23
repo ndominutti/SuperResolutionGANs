@@ -1,14 +1,13 @@
-from sagemaker.workflow.steps import ProcessingStep, TrainingStep, CreateModelStep, CreateModelInput
-import sagemaker
-from sagemaker.workflow.step_collections import RegisterModel
-from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.processing import Processor, ProcessingInput, ProcessingOutput
-from sagemaker.debugger import TensorBoardOutputConfig
-from sagemaker.inputs import TrainingInput
-import time
-from sagemaker.workflow.model_step import ModelStep
+from sagemaker.workflow.steps import ProcessingStep, TrainingStep
 from sagemaker.workflow.pipeline_context import PipelineSession
+from sagemaker.debugger import TensorBoardOutputConfig
+from sagemaker.workflow.model_step import ModelStep
+from sagemaker.workflow.pipeline import Pipeline
+from sagemaker.inputs import TrainingInput
 from config import *
+import sagemaker
+import time
 
 PIPELINE_SESSION = PipelineSession()
 
