@@ -28,6 +28,6 @@ def send_request(args):
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--endpoint-name", type=str, default='RealESRGAN-Endpoint')
-    parser.add_argument("--image-path", type=str)
+    parser.add_argument("--image-path", type=str, default='./sample_img/sample_500.png')
     parser.add_argument("--image-save-path", type=str, default='./recieved_img.png')
     send_request(parser.parse_args())    
