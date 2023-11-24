@@ -6,18 +6,3 @@ Resources:
     Properties:
       BucketName: real-esrgan
       AccessControl: Private
-    
-  RealESRGANBucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: !Ref RealESRGANBucket
-      PolicyDocument:
-        Statement:
-          - Sid: AllowPutObjectInBucket
-            Effect: Allow
-            Principal: '*'
-            Action: 's3:PutObject'
-            Resource: !Join 
-              - ''
-              - - !GetAtt RealESRGANBucket.Arn
-                - /*
