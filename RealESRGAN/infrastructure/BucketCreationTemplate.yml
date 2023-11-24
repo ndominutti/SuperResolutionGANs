@@ -4,5 +4,5 @@ Resources:
   RealESRGANBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: real-esrgan
+      BucketName: realesrgan
       AccessControl: Private

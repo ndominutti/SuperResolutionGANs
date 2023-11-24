@@ -71,18 +71,18 @@ python3 pipeline/pipeline.py
 
 ```
 # Delete bucket subfolders
-aws s3 rm s3://real-esrgan/train/ --recursive
-aws s3 rm s3://real-esrgan/validation/ --recursive
-aws s3 rm s3://real-esrgan/lambda_function/ --recursive
+aws s3 rm s3://realesrgan/train/ --recursive
+aws s3 rm s3://realesrgan/validation/ --recursive
+aws s3 rm s3://realesrgan/lambda_function/ --recursive
 
 # Delete cloudformation stack
 aws cloudformation delete-stack --stack-name RealESRGANBucketStack
 aws cloudformation delete-stack --stack-name RealESRGANStack
 
 # Delete ECR images
-aws ecr batch-delete-image --repository-name resrgan_processing_job_image
-aws ecr batch-delete-image --repository-name resrgan_training_job_image
-aws ecr batch-delete-image --repository-name  resrgan_inference_image
+aws ecr delete-repository --repository-name resrgan_processing_job_image
+aws ecr delete-repository --repository-name resrgan_training_job_image
+aws ecr delete-repository --repository-name  resrgan_inference_image
 
 # Delete model, endpoint config and endpoint
 aws sagemaker delete-model --model-name RealESRGAN-Model
