@@ -35,10 +35,61 @@ One might argue that this could be achieved with a single interpolation. However
 
 ## Repository structure
 
-* **build_and_push.sh**: this is a really useful file to build and push images to ECR
+* **setup.sh**: startup file, in charge of setting the needed infrastructure to run the full pipeline
+* **build_and_push.sh**: this is an useful file to build and push images to ECR
+* **infrastructure/**: in this DIR you will find the cloudformation + lambda code
 * **preprocess/**: in this DIR you will find the processing job to preprocess the images before training
 * **train/**: in this DIR you will find the training job
 * **deploy/**: in this DIR you will find the necessary code to create a model with the trained model and deploying it into a sagemaker endpoint
-* **pipeline/**: in this DIR you will find the implementation of a Sagemaker pipeline that includes the end to end job, including an Amazon A2I step after training to notify and allow a human to approve the training metrics before deploying (WIP)
+* **pipeline/**: in this DIR you will find the implementation of a Sagemaker pipeline that includes the end to end job, including a model validation step after training to notify and allow a human to approve the training metrics before deploying
+
+<br>
+
+## Usage
+Install docker
+Remember about quotas for jobs
+Have in mind the needed space
+For running the setup.sh file at least 8GB RAM are needed, otherwise the process will crash
+```
+#Setup the infrastructure
+chmod +x setup.sh
+./setup.sh create
+
+# Copy your training images into S3://real-esrgan/train/HQ and your validation images into S3://real-esrgan/validation/HQ
+
+# Initiate pipeline excecution
+python3 pipeline/pipeline.py
+
+# Approve the model
+
+
+```
+
+<br>
+
+## Cleanup
+
+```
+# Delete bucket subfolders
+aws s3 rm s3://real-esrgan/train/ --recursive
+aws s3 rm s3://real-esrgan/validation/ --recursive
+aws s3 rm s3://real-esrgan/lambda_function/ --recursive
+
+# Delete cloudformation stack
+aws cloudformation delete-stack --stack-name RealESRGANBucketStack
+aws cloudformation delete-stack --stack-name RealESRGANStack
+
+# Delete ECR images
+aws ecr batch-delete-image --repository-name resrgan_processing_job_image
+aws ecr batch-delete-image --repository-name resrgan_training_job_image
+aws ecr batch-delete-image --repository-name  resrgan_inference_image
+
+# Delete model, endpoint config and endpoint
+aws sagemaker delete-model --model-name RealESRGAN-Model
+aws sagemaker delete-endpoint-config --endpoint-config-name <CHECK THE ENDPOINT CONFIG NAME>
+aws sagemaker delete-endpoint --endpoint-name RealESRGAN-Endpoint
+```
+
+
 
 
