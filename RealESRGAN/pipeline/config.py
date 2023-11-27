@@ -16,8 +16,8 @@ TRAINING_JOB_IMAGE = f"{ACCOUNT}.dkr.ecr.{REGION}.amazonaws.com/resrgan_training
 TRAINING_JOB_INSTANCE_TYPE = ParameterString(name="TrainingJobInstanceType", default_value="ml.g4dn.xlarge")
 TRAINING_JOB_NAME = 'RealESRGAN-training'
 TRAINING_JOB_OUTPUT_PATH = ParameterString(name="TrainingJobOutputPath", default_value="s3://{}/output".format(SESSION.default_bucket()))
-TRAINING_JOB_TRAIN_INPUT_PATH = ParameterString(name="TrainingJobTrainInputPath", default_value="s3://real-esrgan/train")
-TRAINING_JOB_TRAIN_VALIDATION_PATH = ParameterString(name="TrainingJobValidationInputPath", default_value="s3://real-esrgan/validation")
+TRAINING_JOB_TRAIN_INPUT_PATH = ParameterString(name="TrainingJobTrainInputPath", default_value="s3://realesrgan/train")
+TRAINING_JOB_VALIDATION_INPUT_PATH = ParameterString(name="TrainingJobValidationInputPath", default_value="s3://realesrgan/validation")
 TRAINING_JOB_CONTAINER_PORT = ParameterInteger(name="TrainingJobContainerPort", default_value=8080)
 #############################################
 INFERENCE_JOB_IMAGE = f"{ACCOUNT}.dkr.ecr.{REGION}.amazonaws.com/resrgan_inference_image:latest"
