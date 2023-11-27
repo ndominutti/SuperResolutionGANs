@@ -1,2 +1,3 @@
 sagemaker
 awscli
+pillow
