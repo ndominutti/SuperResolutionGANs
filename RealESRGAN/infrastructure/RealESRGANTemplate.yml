@@ -34,7 +34,25 @@ Resources:
               - Effect: Allow
                 Action: 'ecr:*'
                 Resource: '*'
-
+        - PolicyName: PassRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'iam:PassRole'
+                Resource: '*'
+        - PolicyName: cloudwatch
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: [
+                    "logs:*",
+                    "cloudwatch:GenerateQuery"
+                ]
+                Resource: '*'
+        
 
   RealESRGANLambdaRole:
     Type: 'AWS::IAM::Role'
