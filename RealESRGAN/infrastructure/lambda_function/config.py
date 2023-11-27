@@ -9,4 +9,4 @@ INSTANCE_COUNT=1
 ENDPOINT_NAME = 'RealESRGAN-Endpoint'
 ENDPOINT_CONFIG_NAME = 'RealESRGAN-Endpoint-Config-'
 MODEL_PACKAGE_NAME = 'RealESRGAN'
-EXECUTION_ROLE = f"arn:aws:iam::{ACCOUNT}:role/sagemaker_train_serve"
+EXECUTION_ROLE = f"arn:aws:iam::{ACCOUNT}:role/RealESRGANRole"
