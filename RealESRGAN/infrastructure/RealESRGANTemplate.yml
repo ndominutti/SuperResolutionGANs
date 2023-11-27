@@ -57,6 +57,7 @@ Resources:
                   - 'logs:CreateLogGroup'
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
+                  - 's3:*'
                 Resource: '*'
         - PolicyName: LambdaPassRole
           PolicyDocument:
