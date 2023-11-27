@@ -12,7 +12,7 @@ import time
 PIPELINE_SESSION = PipelineSession()
 
 def main():
-    #PROCESSING JOB
+    # PROCESSING JOB
     print('*'*10 + ' RUNNING PROCESSING JOB DEFINITION ' + '*'*10)
     processor = Processor(
         role=ROLE,
@@ -25,11 +25,11 @@ def main():
     )
     
     processing_args = processor.run(
-        inputs=[ProcessingInput(source="s3://real-esrgan/train/hq/", destination="/opt/ml/processing/data/training/hq"),
-               ProcessingInput(source="s3://real-esrgan/validation/hq/", destination="/opt/ml/processing/validation/hq")],
-        outputs=[ProcessingOutput(source="/opt/ml/processing/data/training/lq",destination="s3://real-esrgan/train/lq/"),
-                 ProcessingOutput(source="/opt/ml/processing/data/training/meta_info",destination="s3://real-esrgan/train/"),
-                ProcessingOutput(source="/opt/ml/processing/data/validation/lq",destination="s3://real-esrgan/validation/lq/")]
+        inputs=[ProcessingInput(source="s3://realesrgan/train/hq/", destination="/opt/ml/processing/data/training/hq"),
+               ProcessingInput(source="s3://realesrgan/validation/hq/", destination="/opt/ml/processing/data/validation/hq")],
+        outputs=[ProcessingOutput(source="/opt/ml/processing/data/training/lq",destination="s3://realesrgan/train/lq/"),
+                 ProcessingOutput(source="/opt/ml/processing/data/training/meta_info",destination="s3://realesrgan/train/"),
+                ProcessingOutput(source="/opt/ml/processing/data/validation/lq",destination="s3://realesrgan/validation/lq/")]
     )
     
     processing_step = ProcessingStep(
@@ -62,7 +62,7 @@ def main():
                 s3_data=TRAINING_JOB_TRAIN_INPUT_PATH
             ),
             'validation': TrainingInput(
-                s3_data=TRAINING_JOB_TRAIN_VALIDATION_PATH
+                s3_data=TRAINING_JOB_VALIDATION_INPUT_PATH
             )
         }
     )
@@ -112,7 +112,7 @@ def main():
             TRAINING_JOB_CONTAINER_PORT,
             TBC,
             TRAINING_JOB_TRAIN_INPUT_PATH,
-            TRAINING_JOB_TRAIN_VALIDATION_PATH,
+            TRAINING_JOB_VALIDATION_INPUT_PATH,
             INFERENCE_JOB_IMAGE,
             INFERENCE_JOB_INSTANCE_TYPE,
             MODEL_APPROVAL_STATUS,
