@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Real ESRGAN
+python3 realesrgan/train.py -opt options/custom_finetune_4x.yml --auto_resume
+
+cp /opt/program/Real-ESRGAN/experiments/finetune_RealESRGANx4plus_400k/models/* /opt/ml/model
+
+echo "Model copied correctly into /opt/ml/model!"

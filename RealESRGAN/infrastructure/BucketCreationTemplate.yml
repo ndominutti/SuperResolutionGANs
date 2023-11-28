@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  RealESRGANBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: realesrgan
+      AccessControl: Private
