@@ -3,13 +3,22 @@
 <br>
 
 ## Overview
-A Real ESRGAN is a model used for Super Resolution tasks, it was proposed in [Xintao Wang et al. 2021. PReal-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data](https://arxiv.org/abs/2107.10833) and implemented in [this repository](https://github.com/xinntao/Real-ESRGAN).
+Real-ESRGAN is a model used for Super Resolution tasks, it was proposed in [Xintao Wang et al. 2021. PReal-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data](https://arxiv.org/abs/2107.10833) and implemented in [this repository](https://github.com/xinntao/Real-ESRGAN).
 
 
 Here I present a particular implementation of a fine-tuning and deploying process using AWS Sagemaker, this includes a:
-* Processing Job: in charge of creating the training set, using a High Quality set of images stored in S3
-* Training Job: training the model
+* SageMaker Pipeline that manages a:
+    * Processing Job: in charge of creating the training set, using a High Quality set of images stored in S3
+    * Training Job: training the model
+    * Model register: create a package version with the trained model
+* An AWS EventBridge rule
+* An AWS Lambda Function
 * Inference Endpoint creation: running an inference server in a sagemaker endpoint
+
+<div style="text-align: center;">
+    <img src="static/infrastructure.png" width="790" height="220" />
+    <h6>Proposed infrastructure</h6>
+</div>
 
 <br>
 
@@ -41,53 +50,44 @@ One might argue that this could be achieved with a single interpolation. However
 * **preprocess/**: in this DIR you will find the processing job to preprocess the images before training
 * **train/**: in this DIR you will find the training job
 * **deploy/**: in this DIR you will find the necessary code to create a model with the trained model and deploying it into a sagemaker endpoint
-* **pipeline/**: in this DIR you will find the implementation of a Sagemaker pipeline that includes the end to end job, including a model validation step after training to notify and allow a human to approve the training metrics before deploying
+* **pipeline/**: in this DIR you will find the implementation of the Sagemaker pipeline
 
 <br>
 
+## Pre-requirements
+
+* Install docker
+* Have a look in your AWS Quotas, you will need availability for:
+    * Running a Preprocessing job in a ml.m5.large
+    * Running a training job in a ml.g4dn.xlarge
+    * Running an inference point in a ml.g4dn.xlarge
+* For running the setup.sh file at least 8GB RAM are needed (due to images building)
+
 ## Usage
-Install docker
-Remember about quotas for jobs
-Have in mind the needed space
-For running the setup.sh file at least 8GB RAM are needed, otherwise the process will crash
+
+To use this repo you will need to:
+1) Launch _setup.sh_ to build the needed infrastructure
 ```
-#Setup the infrastructure
 chmod +x setup.sh
 ./setup.sh create
+```
 
-# Copy your training images into S3://real-esrgan/train/HQ and your validation images into S3://real-esrgan/validation/HQ
+2) Add your training images into the bucket s3://realesrgan/train/hq and s3://realesrgan/validation/hq
 
-# Initiate pipeline excecution
+3) Launch the Sagemaker pipeline that creates a new model version after training is completed
+```
 python3 pipeline/pipeline.py
-
-# Approve the model
-
-
 ```
 
 <br>
 
 ## Cleanup
 
+To tear down the used resources you can run the _teardown.sh_ file
+
 ```
-# Delete bucket subfolders
-aws s3 rm s3://realesrgan/train/ --recursive
-aws s3 rm s3://realesrgan/validation/ --recursive
-aws s3 rm s3://realesrgan/lambda_function/ --recursive
-
-# Delete cloudformation stack
-aws cloudformation delete-stack --stack-name RealESRGANBucketStack
-aws cloudformation delete-stack --stack-name RealESRGANStack
-
-# Delete ECR images
-aws ecr delete-repository --repository-name resrgan_processing_job_image
-aws ecr delete-repository --repository-name resrgan_training_job_image
-aws ecr delete-repository --repository-name  resrgan_inference_image
-
-# Delete model, endpoint config and endpoint
-aws sagemaker delete-model --model-name RealESRGAN-Model
-aws sagemaker delete-endpoint-config --endpoint-config-name <CHECK THE ENDPOINT CONFIG NAME>
-aws sagemaker delete-endpoint --endpoint-name RealESRGAN-Endpoint
+chmod +x teardown.sh
+./teardown.sh <SAGEMAKER_MODEL_NAME> <SAGEMAKER_ENDPOINT_CONFIGURATION_NAME>
 ```
 
 

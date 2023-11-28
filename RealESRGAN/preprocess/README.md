@@ -4,7 +4,7 @@
 
 ## Overview
 
-This phase involves reading the high-quality (HQ) training and validation images stored in S3 and generating a lower-quality (LQ) version. This LQ version is utilized during the training phase. Separating this step from the training job serves the dual purpose of maintaining modularity and optimizing costs. Unlike the training job, the processing job doesn't require GPU resources, contributing to cost efficiency.
+This step involves reading the high-quality (HQ) training and validation images stored in S3 and generating a lower-quality (LQ) version. This LQ version is utilized during the training phase. Separating this step from the training job serves the dual purpose of maintaining modularity and optimizing costs. Unlike the training job, the processing job doesn't require GPU resources, contributing to cost efficiency.
 
 <br>
 
