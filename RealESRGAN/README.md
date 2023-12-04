@@ -6,7 +6,7 @@
 Real-ESRGAN is a model used for Super Resolution tasks, it was proposed in [Xintao Wang et al. 2021. PReal-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data](https://arxiv.org/abs/2107.10833) and implemented in [this repository](https://github.com/xinntao/Real-ESRGAN).
 
 
-Here I present a particular implementation of a fine-tuning and deploying process using AWS Sagemaker, this includes a:
+Here and in this [Medium post](https://ndominutti.medium.com/amazon-sagemaker-pipeline-from-training-to-deployment-real-esrgan-case-study-343c6b7072d9) I present a particular implementation of a fine-tuning and deploying process using AWS Sagemaker, this includes a:
 * SageMaker Pipeline that manages a:
     * Processing Job: in charge of creating the training set, using a High Quality set of images stored in S3
     * Training Job: training the model
